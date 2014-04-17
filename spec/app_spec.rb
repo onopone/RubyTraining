@@ -136,9 +136,9 @@ describe 'app.rb' do
     end
 
     context 'given 404' do
-      it 'returns 302' do
-        get '/302'
-        last_response.status = 302
+      it 'returns 404' do
+        get '/404'
+        last_response.status = 404
       end
     end
 
