@@ -6,6 +6,20 @@ require 'haml'
 require 'redcarpet'
 
 require_relative 'models/todo'
+#require_relative 'helpers/error_helper' 
+
+module ErrorHelper
+  def throwInternalServerError(response)
+    begin
+	   yield
+    rescue
+       response.status = 500
+	   error_dic = Hash[ "message" , "unexpected error" ]
+	   JSON.dump(error_dic)
+       #return nil		#return nilはメソッドを呼び出した際も適用され、全体が落ちる
+    end
+  end 
+end
 
 class Mosscow < Sinatra::Base
   register Sinatra::ActiveRecordExtension
@@ -17,6 +31,10 @@ class Mosscow < Sinatra::Base
 # set :show_exceptions, false # uncomment here when you do NOT want to see a backtrace
   set :database_file, 'config/database.yml'
 
+  helpers do
+    include ErrorHelper
+  end
+  
   configure :development do
     register Sinatra::Reloader
   end
@@ -37,23 +55,6 @@ class Mosscow < Sinatra::Base
 
   get '/500' do
   	 halt 500, haml(:internal_error)
-
-=begin  
-    <<"EOS"
-    <html>
-      <head>
-        <title>500 Internal Server Error</title>
-      </head>
-      <body>
-        <h1>Internal Server Error</h1>
-        <img src='images/500.jpg'>
-        <p>
-        なんかだめでしたすみませんすみません:(；ﾞﾟ'ωﾟ')::(；ﾞﾟ'ωﾟ'):
-        </p>
-      </body>
-    </html>
-EOS
-=end
   end
 
   get '/400' do
@@ -61,12 +62,8 @@ EOS
   end
 
   get '/error' do
-    begin
-      fail
-    rescue
-      response.status = 500
-      return nil
-    end
+  	fail
+#     throwInternalServerError(response){ fail }
   end
 
   get '/' do
@@ -82,15 +79,10 @@ EOS
   end
 
   delete '/api/todos/:id' do
-    todo = Todo.where(id: params[:id]).first
-    begin
-      todo.destroy
-    rescue
-      response.status = 500
-      return nil
-    end
-    response.status = 204
-    nil
+    todo = Todo.where(id: params[:id]).first 
+	todo.destroy
+	response.status = 204
+#    throwInternalServerError(response){ todo.destroy }
   end
 
   put '/api/todos/:id' do

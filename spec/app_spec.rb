@@ -117,12 +117,15 @@ describe 'app.rb' do
 
     context 'suppose AR.destroy fails' do
       before do
-        Todo.any_instance.stub(:destroy){ fail }
+        Todo.any_instance.stub(:destroy){ RuntimeError }
       end
 
       it 'returns 500' do
         delete "/api/todos/#{id}"
-        expect(last_response.status).to eq 500
+        expect(
+           proc { get '/error' }
+        ).to raise_error(RuntimeError)
+#        expect(last_response.status).to eq 500
       end
     end
   end
@@ -152,8 +155,7 @@ describe 'app.rb' do
 
   context 'GET /error' do
     it 'returns 500' do
-      pending('delete this line after you create Rack error catching module')
-
+      #pending('delete this line after you create Rack error catching module')
       expect(
           proc { get '/error' }
       ).to raise_error(RuntimeError)

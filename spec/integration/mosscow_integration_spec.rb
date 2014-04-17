@@ -11,9 +11,10 @@ describe 'Integration Test' do
   end
 
   include Rack::Test::Methods
-
+  require_relative '../../app/middleware/api_request_filter'
   def app
-    @app ||= Mosscow
+#    @app ||= Mosscow
+	 @app ||= APIRequestFilter.new(Mosscow)
   end
 
   # Please delete 'broken:true' after you create Rack camel <-> snake converting middleware
