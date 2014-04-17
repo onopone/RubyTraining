@@ -31,10 +31,14 @@ class Mosscow < Sinatra::Base
   end
 
   get '/404' do
-    redirect '404.txt'
+  	 halt 404, "ページが無いです〜"
+#    redirect '404.txt'
   end
 
   get '/500' do
+  	 halt 500, haml(:internal_error)
+
+=begin  
     <<"EOS"
     <html>
       <head>
@@ -49,6 +53,7 @@ class Mosscow < Sinatra::Base
       </body>
     </html>
 EOS
+=end
   end
 
   get '/400' do

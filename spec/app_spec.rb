@@ -138,14 +138,14 @@ describe 'app.rb' do
     context 'given 404' do
       it 'returns 404' do
         get '/404'
-        expect(last_response.status).to eq 302
+        expect(last_response.status).to eq 404
       end
     end
 
     context 'given 500' do
-      it 'returns 200' do
+      it 'returns 500' do
         get '/500'
-        expect(last_response.status).to eq 200
+        expect(last_response.status).to eq 500
       end
     end
   end
